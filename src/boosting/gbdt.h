@@ -252,6 +252,19 @@ public:
     models_[tree_idx]->SetLeafOutput(leaf_idx, val);
   }
 
+  inline void SetPredecessor(GBDT* predecessor) {
+    predecessor_ = predecessor;
+    ConnectTreeLearners();
+  }
+
+  inline bool HasPredecessor() const {
+    return predecessor_ != nullptr;
+  }
+
+  virtual void ConnectTreeLearners() {
+    Log::Warning("GBDT::ConnectTreeLearners() is not implemented");
+  }
+
   /*!
   * \brief Get Type name of this boosting object
   */
@@ -304,6 +317,8 @@ protected:
   int iter_;
   /*! \brief Pointer to training data */
   const Dataset* train_data_;
+  /*! \brief Pointer to Predecessor */
+  GBDT* predecessor_;
   /*! \brief Config of gbdt */
   std::unique_ptr<BoostingConfig> gbdt_config_;
   /*! \brief Tree learner, will use this class to learn trees */

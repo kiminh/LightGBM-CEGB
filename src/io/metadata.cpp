@@ -331,7 +331,8 @@ void Metadata::SetWeights(const float* weights, data_size_t len) {
   }
   if (!weights_.empty()) { weights_.clear(); }
   num_weights_ = num_data_;
-  weights_ = std::vector<float>(num_weights_);
+  weights_.resize(num_weights_);
+  /* weights_ = std::vector<float>(num_weights_); */
 #pragma omp parallel for schedule(static)
   for (data_size_t i = 0; i < num_weights_; ++i) {
     weights_[i] = weights[i];

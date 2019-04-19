@@ -133,7 +133,10 @@ class LGBMModel(LGBMModelBase):
                  poisson_max_delta_step=0.7,
                  max_position=20, label_gain=None,
                  drop_rate=0.1, skip_drop=0.5, max_drop=50,
-                 uniform_drop=False, xgboost_dart_mode=False, use_missing=True):
+                 uniform_drop=False, xgboost_dart_mode=False, use_missing=True,
+                 cegb_tradeoff=0.001, cegb_penalty_split=0.0,
+                 cegb_independent_branches=False, cegb_predict_lazy=True,
+                 cegb_penalty_feature_lazy=''):
         """
         Implementation of the Scikit-Learn API for LightGBM.
 
@@ -277,6 +280,11 @@ class LGBMModel(LGBMModelBase):
         self.evals_result = None
         self.best_iteration = -1
         self.best_score = {}
+        self.cegb_tradeoff = cegb_tradeoff
+        self.cegb_penalty_split = cegb_penalty_split
+        self.cegb_independent_branches = cegb_independent_branches
+        self.cegb_predict_lazy = cegb_predict_lazy
+        self.cegb_penalty_feature_lazy = cegb_penalty_feature_lazy
         if callable(self.objective):
             self.fobj = _objective_function_wrapper(self.objective)
         else:
@@ -668,7 +676,10 @@ class LGBMRanker(LGBMModel):
                  is_unbalance=False, seed=0, nthread=-1, silent=True,
                  sigmoid=1.0, max_position=20, label_gain=None,
                  drop_rate=0.1, skip_drop=0.5, max_drop=50,
-                 uniform_drop=False, xgboost_dart_mode=False, use_missing=True):
+                 uniform_drop=False, xgboost_dart_mode=False, use_missing=True,
+                 cegb_tradeoff=0.001, cegb_penalty_split=0.0,
+                 cegb_independent_branches=False, cegb_predict_lazy=True,
+                 cegb_penalty_feature_lazy=''):
         super(LGBMRanker, self).__init__(boosting_type=boosting_type, num_leaves=num_leaves,
                                          max_depth=max_depth, learning_rate=learning_rate,
                                          n_estimators=n_estimators, max_bin=max_bin,
@@ -682,7 +693,12 @@ class LGBMRanker(LGBMModel):
                                          sigmoid=sigmoid, max_position=max_position, label_gain=label_gain,
                                          drop_rate=drop_rate, skip_drop=skip_drop, max_drop=max_drop,
                                          uniform_drop=uniform_drop, xgboost_dart_mode=xgboost_dart_mode,
-                                         use_missing=use_missing)
+                                         use_missing=use_missing, cegb_tradeoff=cegb_tradeoff,
+                                         cegb_penalty_split=cegb_penalty_split,
+                                         cegb_independent_branches=cegb_independent_branches,
+                                         cegb_predict_lazy=cegb_predict_lazy,
+                                         cegb_penalty_feature_lazy=cegb_penalty_feature_lazy
+                                         )
 
     def fit(self, X, y,
             sample_weight=None, init_score=None, group=None,

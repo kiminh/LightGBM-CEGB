@@ -42,7 +42,7 @@ Boosting* Boosting::CreateBoosting(const std::string& model)
   } else if (type_in_string == std::string("tree")) {
     ret.reset(new DART());
   } else {
-    Log::Fatal("unknown submodel type in model string %s", type_in_string);
+    Log::Fatal("unknown submodel type in model string %s", type_in_string.c_str());
   }
 
   if (!ret->LoadModelFromString(model))

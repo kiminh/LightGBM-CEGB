@@ -1,8 +1,16 @@
 cmake_minimum_required(VERSION 2.8)
 
 if(APPLE)
-    SET(CMAKE_CXX_COMPILER "g++-7")
-    SET(CMAKE_C_COMPILER "gcc-7")
+    find_program(HAS_GCC_7 "gcc-7")
+    find_program(HAS_GCC_8 "gcc-8")
+
+    if(HAS_GCC_8)
+        SET(CMAKE_CXX_COMPILER "g++-8")
+        SET(CMAKE_C_COMPILER "gcc-8")
+    elseif(HAS_GCC_7)
+        SET(CMAKE_CXX_COMPILER "g++-7")
+        SET(CMAKE_C_COMPILER "gcc-7")
+    endif(HAS_GCC_8)
 endif()
 
 PROJECT(lightgbm)

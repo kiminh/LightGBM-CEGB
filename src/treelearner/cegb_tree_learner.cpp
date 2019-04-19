@@ -128,11 +128,23 @@ double CEGBTreeLearner::CalculateOndemandCosts(int feature_index, int leaf_index
   data_size_t cnt_leaf_data = 0;
   auto tmp_idx = data_partition_->GetIndexOnLeaf(leaf_index, &cnt_leaf_data);
 
-  for (data_size_t i_input = 0; i_input < cnt_leaf_data; ++i_input) {
-    int real_idx = GetRealDataIndex(tmp_idx[i_input]);
-    if (lazy_features_used[train_data_->num_data() * feature_index + real_idx])
-      continue;
-    total += penalty;
+  if (predecessor) {
+    for (data_size_t i_input = 0; i_input < cnt_leaf_data; ++i_input) {
+      int real_idx = GetRealDataIndex(tmp_idx[i_input]);
+      if (predecessor->lazy_features_used[train_data_->num_data() * feature_index + real_idx])
+        continue;
+      if (lazy_features_used[train_data_->num_data() * feature_index + real_idx])
+        continue;
+      total += penalty;
+    }
+  }
+  else {
+    for (data_size_t i_input = 0; i_input < cnt_leaf_data; ++i_input) {
+      int real_idx = GetRealDataIndex(tmp_idx[i_input]);
+      if (lazy_features_used[train_data_->num_data() * feature_index + real_idx])
+        continue;
+      total += penalty;
+    }
   }
 
   return total;
@@ -150,7 +162,8 @@ void CEGBTreeLearner::FindBestSplitForLeaf(int leaf) {
     double i_penalty_lazy = 0.0f;
     double i_penalty_coupled = 0.0f;
 
-    if (!coupled_features_used[i_feature]) {
+    if (!coupled_features_used[i_feature] &&
+	(!predecessor || !predecessor->coupled_features_used[i_feature])) {
       auto res = cegb_config->penalty_feature_coupled.find(i_feature);
       if (res != cegb_config->penalty_feature_coupled.end())
         i_penalty_coupled = res->second;

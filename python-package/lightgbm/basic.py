@@ -1218,7 +1218,7 @@ class Dataset(object):
 
 class Booster(object):
     """"Booster in LightGBM."""
-    def __init__(self, params=None, train_set=None, model_file=None, silent=False):
+    def __init__(self, params=None, train_set=None, model_file=None, predecessor=None, silent=False):
         """
         Initialize the Booster.
 
@@ -1230,6 +1230,8 @@ class Booster(object):
             Training dataset
         model_file : string
             Path to the model file.
+        predecessor : Booster
+            Preceding booster
         silent : boolean, optional
             Whether print messages during construction
         """
@@ -1291,6 +1293,12 @@ class Booster(object):
             self.__load_model_from_string(params['model_str'])
         else:
             raise TypeError('Need at least one training dataset or model file to create booster instance')
+
+        """set predecessor"""
+        if predecessor is not None:
+            _safe_call(_LIB.LGBM_BoosterSetPredecessor(
+                self.handle,
+                predecessor.handle))
 
     def __del__(self):
         if self.handle is not None:
@@ -1852,3 +1860,18 @@ class Booster(object):
                 self.__attr[key] = value
             else:
                 self.__attr.pop(key, None)
+
+    def has_predecessor(self):
+        """
+        Check if the predecessor was set
+
+        Returns
+        -------
+        value : bool
+            True if the predecessor was set, False otherwise
+        """
+        out_ret = ctypes.c_bool(False)
+        _safe_call(_LIB.LGBM_BoosterHasPredecessor(
+            self.handle,
+            ctypes.byref(out_ret)))
+        return out_ret.value

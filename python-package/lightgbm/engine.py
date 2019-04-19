@@ -19,7 +19,7 @@ def train(params, train_set, num_boost_round=100,
           fobj=None, feval=None, init_model=None,
           feature_name='auto', categorical_feature='auto',
           early_stopping_rounds=None, evals_result=None,
-          verbose_eval=True, learning_rates=None, callbacks=None):
+          verbose_eval=True, learning_rates=None, callbacks=None, predecessor=None):
     """
     Train with given parameters.
 
@@ -160,7 +160,7 @@ def train(params, train_set, num_boost_round=100,
     callbacks_after_iter = sorted(callbacks_after_iter, key=attrgetter('order'))
 
     """construct booster"""
-    booster = Booster(params=params, train_set=train_set)
+    booster = Booster(params=params, train_set=train_set, predecessor=predecessor)
     if is_valid_contain_train:
         booster.set_train_data_name(train_data_name)
     for valid_set, name_valid_set in zip(reduced_valid_sets, name_valid_sets):

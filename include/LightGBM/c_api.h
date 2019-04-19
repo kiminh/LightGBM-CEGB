@@ -732,6 +732,18 @@ LIGHTGBM_C_EXPORT int LGBM_BoosterSetLeafValue(BoosterHandle handle,
                                                int leaf_idx,
                                                double val);
 
+/*!
+* \brief Set the predecessor (CEGB only)
+* \param handle handle of the current booster
+* \param predecessor handle of the preceding booster
+* \return 0 on success and -1 on failure
+*/
+LIGHTGBM_C_EXPORT int LGBM_BoosterSetPredecessor(BoosterHandle handle,
+						 BoosterHandle predecessor);
+
+LIGHTGBM_C_EXPORT int LGBM_BoosterHasPredecessor(BoosterHandle handle,
+					         bool* out_val);
+
 #if defined(_MSC_VER)
 // exception handle and error msg
 static char* LastErrorMsg() { static __declspec(thread) char err_msg[512] = "Everything is fine"; return err_msg; }

@@ -32,6 +32,7 @@ std::chrono::duration<double, std::milli> tree_time;
 GBDT::GBDT()
   :iter_(0),
   train_data_(nullptr),
+  predecessor_(nullptr),
   objective_function_(nullptr),
   early_stopping_round_(0),
   max_feature_idx_(0),

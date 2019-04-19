@@ -74,6 +74,7 @@ public:
   virtual std::string SaveModelToString(int num_iterations) const override;
 
   void InitPredict(int num_iteration, const BoostingConfig *config) override;
+  void ConnectTreeLearners() override;
 
 private:
   std::map<int, double> predict_penalty_feature_lazy;
@@ -90,7 +91,6 @@ private:
   std::vector<double> models_cost_coupled;
 
   bool allow_train;
-
   double cost;
 
   void ResetFeatureTracking();

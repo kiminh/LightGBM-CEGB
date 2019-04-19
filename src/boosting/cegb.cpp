@@ -83,9 +83,9 @@ void CEGB::ResetFeatureTracking() {
 
 void CEGB::InitTreeLearner(const BoostingConfig *config) {
   if (config->device_type != std::string("cpu"))
-    Log::Fatal("CEGB currently only supports CPU tree learner, '%s' is unsupported.", config->device_type);
+    Log::Fatal("CEGB currently only supports CPU tree learner, '%s' is unsupported.", config->device_type.c_str());
   if (config->tree_learner_type != std::string("serial"))
-    Log::Fatal("CEGB currently only supports serial tree learner, '%s' is unsupported.", config->tree_learner_type);
+    Log::Fatal("CEGB currently only supports serial tree learner, '%s' is unsupported.", config->tree_learner_type.c_str());
 
   if (tree_learner_ != nullptr)
     return;
@@ -165,6 +165,16 @@ void CEGB::InitPredict(int num_iteration, const BoostingConfig *config) {
 
   CEGB::InitPredict(num_iteration);
 
+}
+
+void CEGB::ConnectTreeLearners() {
+  if (!predecessor_) return;
+
+  auto learner = dynamic_cast<CEGBTreeLearner*>(tree_learner_.get());
+  auto preceding_learner = dynamic_cast<CEGBTreeLearner*>(dynamic_cast<CEGB*>(predecessor_)->tree_learner_.get());
+  if (!learner || !preceding_learner) return;
+
+  learner->ConnectTo(preceding_learner);
 }
 
 void CEGB::PredictMulti(const double *features, double *output_raw, double *output, double *leaf, double *cost) const {
@@ -386,7 +396,7 @@ bool CEGB::LoadModelFromString(const std::string &model_str) {
     } else if (value == std::string("true") || value == std::string("+") || value == std::string("1")) {
       predict_independent_branches = true;
     } else {
-      Log::Warning("Model file specifies invalid cegb_independent_branches (%s), assuming true.", value);
+      Log::Warning("Model file specifies invalid cegb_independent_branches (%s), assuming true.", value.c_str());
       predict_independent_branches = true;
     }
   } else {

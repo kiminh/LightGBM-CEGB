@@ -280,6 +280,16 @@ public:
     dynamic_cast<GBDT*>(boosting_.get())->SetLeafValue(tree_idx, leaf_idx, val);
   }
 
+  void SetPredecessor(Booster* predecessor) {
+    auto bst = dynamic_cast<GBDT*>(boosting_.get());
+    auto preceding_bst = dynamic_cast<GBDT*>(predecessor->boosting_.get());
+    bst->SetPredecessor(preceding_bst);
+  }
+
+  bool HasPredecessor() {
+      return dynamic_cast<GBDT*>(boosting_.get())->HasPredecessor();
+  }
+
   int GetEvalCounts() const {
     int ret = 0;
     for (const auto& metric : train_metric_) {
@@ -1180,6 +1190,23 @@ int LGBM_BoosterSetLeafValue(BoosterHandle handle,
   API_BEGIN();
   Booster* ref_booster = reinterpret_cast<Booster*>(handle);
   ref_booster->SetLeafValue(tree_idx, leaf_idx, val);
+  API_END();
+}
+
+int LGBM_BoosterSetPredecessor(BoosterHandle handle,
+			       BoosterHandle predecessor) {
+  API_BEGIN();
+  Booster* ref_booster = reinterpret_cast<Booster*>(handle);
+  Booster* ref_preceding_booster = reinterpret_cast<Booster*>(predecessor);
+  ref_booster->SetPredecessor(ref_preceding_booster);
+  API_END();
+}
+
+int LGBM_BoosterHasPredecessor(BoosterHandle handle,
+			       bool* out_val) {
+  API_BEGIN();
+  Booster* ref_booster = reinterpret_cast<Booster*>(handle);
+  *out_val = static_cast<bool>(ref_booster->HasPredecessor());
   API_END();
 }
 
